@@ -1,7 +1,7 @@
 #ifndef FCALL_H
 #define FCALL_H
 
-readonly static String8 version9p = str8lit("9P2000");
+readonly static String8 version9p = str8litc("9P2000");
 
 #define MAXWELEM 16
 
@@ -41,6 +41,23 @@ struct Fcall {
 	String8 stat;            /* Rstat, Twstat */
 };
 
+typedef struct Dir Dir;
+struct Dir {
+	/* system-modified data */
+	u32 type; /* server type */
+	u32 dev;  /* server subtype */
+	/* file data */
+	Qid qid;      /* unique id from server */
+	u32 mode;     /* permissions */
+	u32 atime;    /* last read time */
+	u32 mtime;    /* last write time */
+	u64 len;      /* file length */
+	String8 name; /* last element of path */
+	String8 uid;  /* owner name */
+	String8 gid;  /* group name */
+	String8 muid; /* last modifier name */
+};
+
 enum {
 	Tversion = 100,
 	Rversion = 101,
@@ -73,6 +90,9 @@ enum {
 
 static u32 fcallsize(Fcall fc);
 static String8 fcallencode(Arena *a, Fcall fc);
-static b32 fcalldecode(Arena *a, String8 msg, Fcall *fc);
+static Fcall fcalldecode(String8 msg);
+static u32 dirsize(Dir d);
+static String8 direncode(Arena *a, Dir d);
+static Dir dirdecode(String8 msg);
 
 #endif /* FCALL_H */
